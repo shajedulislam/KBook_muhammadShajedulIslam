@@ -18,7 +18,7 @@ class BookList extends StatefulWidget {
 
 class _BookListState extends State<BookList> {
   ScrollController _scrollController = new ScrollController();
-  int loadMoreBookIndex = 20;
+  int loadMoreBookIndex = 0;
   List<BoookItems> bookItems = [];
   @override
   void initState() {
@@ -52,8 +52,14 @@ class _BookListState extends State<BookList> {
         stream: fetchBooksBloc.fetch,
         builder: (context, AsyncSnapshot<BookModel> results) {
           if (results.hasData) {
-            if (results.data != null) {
-              bookItems.addAll(results.data.items);
+            if (results.data == null ||
+                results.data.items == null && bookItems.length == 0) {
+              return Center(child: myText(text: "No data!"));
+            } else {
+              if (results.data.items != null) {
+                bookItems.addAll(results.data.items);
+              }
+
               return GridView.builder(
                   controller: _scrollController,
                   gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
@@ -98,8 +104,6 @@ class _BookListState extends State<BookList> {
                       ),
                     );
                   });
-            } else {
-              return Center(child: myText(text: "No data!"));
             }
           } else if (results.hasError) {
             return Center(child: myText(text: "Something Went Wrong!"));

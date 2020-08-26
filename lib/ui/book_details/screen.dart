@@ -3,7 +3,9 @@ import 'package:flutter/material.dart';
 import 'package:kbook/blocs/book_list/model.dart';
 import 'package:kbook/reusables/enums/image_paths.dart';
 import 'package:kbook/reusables/enums/my_colors.dart';
+import 'package:kbook/reusables/functions/shared_preferences.dart';
 import 'package:kbook/reusables/objects.dart';
+import 'package:kbook/reusables/widgets/buttons/my_button.dart';
 import 'package:kbook/reusables/widgets/card/my_card.dart';
 import 'package:kbook/reusables/widgets/media/my_image.dart';
 import 'package:kbook/reusables/widgets/sizebox/my_sizebox.dart';
@@ -17,6 +19,27 @@ class BookDetails extends StatefulWidget {
 }
 
 class _BookDetailsState extends State<BookDetails> {
+  List<String> kbookFavs = [];
+  bool isFav = false;
+  @override
+  void initState() {
+    _checkForFav();
+    super.initState();
+  }
+
+  _checkForFav() {
+    SharedPreferenceManager.instance.getStringList('kbook_favs').then((value) {
+      setState(() {
+        kbookFavs = value;
+        if (kbookFavs.contains(widget.boookItems.id)) {
+          isFav = true;
+        } else {
+          isFav = false;
+        }
+      });
+    });
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -24,6 +47,38 @@ class _BookDetailsState extends State<BookDetails> {
       appBar: AppBar(
         backgroundColor: MyColors.theme,
         title: myText(text: "Book Detail", color: Colors.white),
+        actions: [
+          myButton(
+            function: () {
+              if (isFav) {
+                kbookFavs.remove(widget.boookItems.id);
+                SharedPreferenceManager.instance
+                    .setStringList('kbook_favs', kbookFavs)
+                    .then((_) {
+                  setState(() {
+                    isFav = false;
+                  });
+                });
+              } else {
+                kbookFavs.add(widget.boookItems.id);
+                SharedPreferenceManager.instance
+                    .setStringList('kbook_favs', kbookFavs)
+                    .then((_) {
+                  setState(() {
+                    isFav = true;
+                  });
+                });
+              }
+            },
+            width: rconfig.px(45),
+            withShadow: false,
+            customChild: Icon(
+              isFav ? Icons.favorite : Icons.favorite_border,
+              color: Colors.white,
+              size: rconfig.fontSize(24),
+            ),
+          ),
+        ],
       ),
       body: SingleChildScrollView(
         physics: ClampingScrollPhysics(),
@@ -63,9 +118,10 @@ class _BookDetailsState extends State<BookDetails> {
                             gapY(y: 2),
                             myText(
                               text: widget.boookItems.volumeInfo.authors
-                                  .toString(),
+                                  .join(', '),
                               fontSize: rconfig.fontSize(14),
-                              color: Colors.black.withOpacity(0.7),
+                              color: Colors.black.withOpacity(0.5),
+                              textAlign: TextAlign.center,
                             ),
                           ],
                         )
