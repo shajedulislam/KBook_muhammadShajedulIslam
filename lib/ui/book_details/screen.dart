@@ -1,8 +1,13 @@
+import 'package:expandable_text/expandable_text.dart';
 import 'package:flutter/material.dart';
 import 'package:kbook/blocs/book_list/model.dart';
+import 'package:kbook/reusables/enums/image_paths.dart';
 import 'package:kbook/reusables/enums/my_colors.dart';
-import 'package:kbook/ui/book_details/components/appbar.dart';
-import 'package:kbook/ui/book_details/components/body.dart';
+import 'package:kbook/reusables/objects.dart';
+import 'package:kbook/reusables/widgets/card/my_card.dart';
+import 'package:kbook/reusables/widgets/media/my_image.dart';
+import 'package:kbook/reusables/widgets/sizebox/my_sizebox.dart';
+import 'package:kbook/reusables/widgets/text/my_text.dart';
 
 class BookDetails extends StatefulWidget {
   final BoookItems boookItems;
@@ -16,8 +21,99 @@ class _BookDetailsState extends State<BookDetails> {
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: MyColors.bg,
-      appBar: bookDetailAppBar(),
-      body: bookDetailBody(boookItems: widget.boookItems),
+      appBar: AppBar(
+        backgroundColor: MyColors.theme,
+        title: myText(text: "Book Detail", color: Colors.white),
+      ),
+      body: SingleChildScrollView(
+        physics: ClampingScrollPhysics(),
+        child: Padding(
+          padding: EdgeInsets.all(rconfig.px(20)),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.stretch,
+            children: [
+              Column(
+                crossAxisAlignment: CrossAxisAlignment.center,
+                children: [
+                  myCard(
+                    width: rconfig.px(200),
+                    height: rconfig.px(250),
+                    child: widget.boookItems.volumeInfo.imageLinks != null
+                        ? widget.boookItems.volumeInfo.imageLinks.thumbnail !=
+                                null
+                            ? myImage(
+                                isNetworkImage: true,
+                                imagePath: widget
+                                    .boookItems.volumeInfo.imageLinks.thumbnail,
+                                boxFit: BoxFit.fitHeight,
+                              )
+                            : myImage(
+                                imagePath: MyImagePaths.no_image,
+                                boxFit: BoxFit.fitHeight,
+                              )
+                        : myImage(
+                            imagePath: MyImagePaths.no_image,
+                            boxFit: BoxFit.fitHeight,
+                          ),
+                  ),
+                  gapY(y: 4),
+                  widget.boookItems.volumeInfo.authors != null
+                      ? Column(
+                          children: [
+                            gapY(y: 2),
+                            myText(
+                              text: widget.boookItems.volumeInfo.authors
+                                  .toString(),
+                              fontSize: rconfig.fontSize(14),
+                              color: Colors.black.withOpacity(0.7),
+                            ),
+                          ],
+                        )
+                      : SizedBox.shrink(),
+                  gapY(y: 2),
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      myText(
+                        text: "Rating : ",
+                        fontSize: rconfig.fontSize(14),
+                        color: Colors.black.withOpacity(0.7),
+                      ),
+                      myText(
+                        text: widget.boookItems.volumeInfo.averageRating ??
+                            "No ratings",
+                        fontSize: rconfig.fontSize(14),
+                        color: Colors.black.withOpacity(0.7),
+                      )
+                    ],
+                  )
+                ],
+              ),
+              widget.boookItems.volumeInfo.description != null
+                  ? Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        gapY(y: 10),
+                        myText(
+                          text: "Description",
+                          fontSize: rconfig.fontSize(14),
+                          fontWeight: FontWeight.w600,
+                        ),
+                        gapY(y: 2),
+                        ExpandableText(
+                          widget.boookItems.volumeInfo.description,
+                          expandText: 'show more',
+                          collapseText: 'show less',
+                          maxLines: 10,
+                          linkColor: Colors.blue,
+                        )
+                      ],
+                    )
+                  : SizedBox.shrink(),
+            ],
+          ),
+        ),
+      ),
     );
   }
 }

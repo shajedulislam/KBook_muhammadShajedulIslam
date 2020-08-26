@@ -136,7 +136,9 @@ class VolumeInfo {
     imageLinks = json['imageLinks'] != null
         ? new ImageLinks.fromJson(json['imageLinks'])
         : null;
-    averageRating = json['averageRating'].toString();
+    averageRating = json.containsKey('averageRating')
+        ? json['averageRating'].toString()
+        : null;
     ratingsCount = json['ratingsCount'];
     subtitle = json['subtitle'];
   }
