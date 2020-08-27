@@ -28,8 +28,9 @@ class _BookListState extends State<BookList> {
     SharedPreferenceManager.instance.getStringList('kbook_favs').then((value) {
       kbookFavsId = value;
       bookItemsFavs.clear();
-      for (String favId in kbookFavsId) {
-        for (BoookItems item in bookItems) {
+
+      for (BoookItems item in bookItems) {
+        for (String favId in kbookFavsId) {
           if (item.id == favId) {
             bookItemsFavs.add(item);
           }
@@ -89,13 +90,14 @@ class _BookListState extends State<BookList> {
                   if (results.data.items != null && isLoad == true) {
                     bookItems.addAll(results.data.items);
 
-                    for (String favId in kbookFavsId) {
-                      for (BoookItems item in results.data.items) {
+                    for (BoookItems item in results.data.items) {
+                      for (String favId in kbookFavsId) {
                         if (item.id == favId) {
                           bookItemsFavs.add(item);
                         }
                       }
                     }
+
                     isLoad = false;
                   }
                   return Stack(

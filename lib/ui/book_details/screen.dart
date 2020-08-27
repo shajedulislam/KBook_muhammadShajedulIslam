@@ -42,15 +42,6 @@ class _BookDetailsState extends State<BookDetails> {
     });
   }
 
-  _launchURL() async {
-    String url = widget.boookItems.saleInfo.buyLink.toString();
-    if (await canLaunch(url)) {
-      await launch(url);
-    } else {
-      throw 'Could not launch $url';
-    }
-  }
-
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -133,11 +124,23 @@ class _BookDetailsState extends State<BookDetails> {
                             boxFit: BoxFit.fitHeight,
                           ),
                   ),
-                  gapY(y: 4),
+                  widget.boookItems.volumeInfo.title != null
+                      ? Column(
+                          children: [
+                            gapY(y: 4),
+                            myText(
+                              text: widget.boookItems.volumeInfo.title,
+                              fontSize: rconfig.fontSize(16),
+                              color: Colors.black,
+                              textAlign: TextAlign.center,
+                            ),
+                          ],
+                        )
+                      : SizedBox.shrink(),
                   widget.boookItems.volumeInfo.authors != null
                       ? Column(
                           children: [
-                            gapY(y: 2),
+                            gapY(y: 4),
                             myText(
                               text: widget.boookItems.volumeInfo.authors
                                   .join(', '),
@@ -171,6 +174,27 @@ class _BookDetailsState extends State<BookDetails> {
               Row(
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
+                  widget.boookItems.volumeInfo.previewLink != null
+                      ? myButton(
+                          height: rconfig.px(30),
+                          color: Colors.transparent,
+                          withShadow: false,
+                          borderColor: MyColors.theme,
+                          width: rconfig.px(80),
+                          buttonText: "Preview",
+                          fontColor: MyColors.theme,
+                          fontSize: rconfig.fontSize(14),
+                          function: () {
+                            launchURL(
+                              widget.boookItems.volumeInfo.previewLink
+                                  .toString(),
+                            );
+                          })
+                      : SizedBox.shrink(),
+                  widget.boookItems.saleInfo.buyLink != null &&
+                          widget.boookItems.volumeInfo.previewLink != null
+                      ? gapX(x: 2)
+                      : SizedBox.shrink(),
                   widget.boookItems.saleInfo.buyLink != null
                       ? myButton(
                           height: rconfig.px(30),
@@ -182,7 +206,8 @@ class _BookDetailsState extends State<BookDetails> {
                           fontColor: MyColors.theme,
                           fontSize: rconfig.fontSize(14),
                           function: () {
-                            _launchURL();
+                            launchURL(
+                                widget.boookItems.saleInfo.buyLink.toString());
                           })
                       : SizedBox.shrink(),
                 ],
