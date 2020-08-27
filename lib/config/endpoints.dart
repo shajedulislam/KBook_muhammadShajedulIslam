@@ -1,7 +1,7 @@
 class MyEndpoints {
-  static String books(String maxResults, String startIndex) =>
-      'https://www.googleapis.com/books/v1/volumes?q=flutter&maxResults=' +
-      maxResults +
+  static String books(int maxResults, int startIndex) =>
+      'https://www.googleapis.com/books/v1/volumes?q=flutter development&maxResults=' +
+      maxResults.toString() +
       '&startIndex=' +
-      startIndex;
+      startIndex.toString();
 }

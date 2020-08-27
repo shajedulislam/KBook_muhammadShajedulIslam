@@ -4,7 +4,20 @@ import 'package:kbook/config/responsiveness/blockwise.dart';
 import 'package:kbook/reusables/objects.dart';
 import 'package:kbook/ui/book_list/screen.dart';
 
-class Kbook extends StatelessWidget {
+import 'reusables/functions/shared_preferences.dart';
+
+class Kbook extends StatefulWidget {
+  @override
+  _KbookState createState() => _KbookState();
+}
+
+class _KbookState extends State<Kbook> {
+  @override
+  void initState() {
+    SharedPreferenceManager.instance.create();
+    super.initState();
+  }
+
   @override
   Widget build(BuildContext context) {
     rconfig.init(context);

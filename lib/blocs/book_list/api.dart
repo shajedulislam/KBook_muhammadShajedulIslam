@@ -4,13 +4,17 @@ import 'package:kbook/config/endpoints.dart';
 class FetchBooksApi {
   // ignore: missing_return
   Future<Map> request(
-    String maxResults,
-    String startIndex,
+    int maxResults,
+    int startIndex,
   ) async {
-    Dio dio;
-    final response = await dio.get(MyEndpoints.books(maxResults, startIndex));
-    if (response.statusCode == 200) {
-      return response.data;
+    try {
+      Dio dio = new Dio();
+      final response = await dio.get(MyEndpoints.books(maxResults, startIndex));
+      if (response.statusCode == 200) {
+        return response.data;
+      }
+    } catch (e) {
+      print(e);
     }
   }
 }
