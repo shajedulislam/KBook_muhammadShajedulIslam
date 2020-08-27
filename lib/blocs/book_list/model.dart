@@ -6,7 +6,7 @@ class BookModel {
   BookModel({this.kind, this.totalItems, this.items});
 
   BookModel.fromJson(Map<String, dynamic> json) {
-    kind = json['kind'];
+    kind = json['kind'] ?? "";
     totalItems = json['totalItems'];
     if (json['items'] != null) {
       items = new List<BoookItems>();

@@ -87,7 +87,11 @@ class _BookListState extends State<BookList> {
               if (results.hasData) {
                 if (results.data == null ||
                     results.data.items == null && bookItems.length == 0) {
-                  return Center(child: myText(text: "No data!"));
+                  return Center(
+                      child: myText(
+                    text: "No data found!",
+                    fontSize: rconfig.fontSize(16),
+                  ));
                 } else {
                   if (results.data.items != null && isLoad == true) {
                     bookItems.addAll(results.data.items);
@@ -113,17 +117,27 @@ class _BookListState extends State<BookList> {
                               scrollController: _scrollController,
                               bookItems: bookItems,
                               updateFavState: _updateFavState,
+                              isShowFavs: isShowFavs,
                             )),
                       ),
                       Offstage(
                         offstage: !isShowFavs,
                         child: TickerMode(
-                            enabled: isShowFavs,
-                            child: booksGrid(
-                              context: context,
-                              bookItems: bookItemsFavs,
-                              updateFavState: _updateFavState,
-                            )),
+                          enabled: isShowFavs,
+                          child: bookItemsFavs.length != 0
+                              ? booksGrid(
+                                  context: context,
+                                  bookItems: bookItemsFavs,
+                                  updateFavState: _updateFavState,
+                                  isShowFavs: isShowFavs,
+                                )
+                              : Center(
+                                  child: myText(
+                                    text: "No favourites items found yet!",
+                                    fontSize: rconfig.fontSize(16),
+                                  ),
+                                ),
+                        ),
                       ),
                     ],
                   );
@@ -135,7 +149,11 @@ class _BookListState extends State<BookList> {
                   // );
                 }
               } else if (results.hasError) {
-                return Center(child: myText(text: "Something Went Wrong!"));
+                return Center(
+                    child: myText(
+                  text: "Something went wrong!",
+                  fontSize: rconfig.fontSize(16),
+                ));
               }
               return loadingIndicator();
             },

@@ -4,6 +4,7 @@ import 'package:kbook/reusables/enums/image_paths.dart';
 import 'package:kbook/reusables/functions/navigation.dart';
 import 'package:kbook/reusables/objects.dart';
 import 'package:kbook/reusables/widgets/card/my_card.dart';
+import 'package:kbook/reusables/widgets/loading_indication/three_bounce.dart';
 import 'package:kbook/reusables/widgets/media/my_image.dart';
 import 'package:kbook/ui/book_details/screen.dart';
 
@@ -12,6 +13,7 @@ Widget booksGrid({
   ScrollController scrollController,
   List<BoookItems> bookItems,
   Function updateFavState,
+  bool isShowFavs,
 }) {
   return GridView.builder(
     controller: scrollController,
@@ -20,6 +22,9 @@ Widget booksGrid({
     ),
     itemCount: bookItems.length,
     itemBuilder: (context, i) {
+      if (i == bookItems.length - 1 && !isShowFavs) {
+        return loadingIndicator();
+      }
       return InkWell(
         onTap: () {
           popListener(
