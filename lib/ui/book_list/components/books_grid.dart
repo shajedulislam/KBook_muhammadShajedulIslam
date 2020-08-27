@@ -17,6 +17,7 @@ Widget booksGrid({
 }) {
   return GridView.builder(
     controller: scrollController,
+    padding: EdgeInsets.only(bottom: rconfig.px(20)),
     gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
       crossAxisCount: 2,
     ),
