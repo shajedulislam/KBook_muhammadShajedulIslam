@@ -11,6 +11,7 @@ import 'package:kbook/reusables/widgets/card/my_card.dart';
 import 'package:kbook/reusables/widgets/media/my_image.dart';
 import 'package:kbook/reusables/widgets/sizebox/my_sizebox.dart';
 import 'package:kbook/reusables/widgets/text/my_text.dart';
+import 'package:url_launcher/url_launcher.dart';
 
 class BookDetails extends StatefulWidget {
   final BoookItems boookItems;
@@ -39,6 +40,15 @@ class _BookDetailsState extends State<BookDetails> {
         }
       });
     });
+  }
+
+  _launchURL() async {
+    String url = widget.boookItems.saleInfo.buyLink.toString();
+    if (await canLaunch(url)) {
+      await launch(url);
+    } else {
+      throw 'Could not launch $url';
+    }
   }
 
   @override
@@ -157,11 +167,31 @@ class _BookDetailsState extends State<BookDetails> {
                   )
                 ],
               ),
+              gapY(y: 4),
+              Row(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  widget.boookItems.saleInfo.buyLink != null
+                      ? myButton(
+                          height: rconfig.px(30),
+                          color: Colors.transparent,
+                          withShadow: false,
+                          borderColor: MyColors.theme,
+                          width: rconfig.px(80),
+                          buttonText: "Buy Now",
+                          fontColor: MyColors.theme,
+                          fontSize: rconfig.fontSize(14),
+                          function: () {
+                            _launchURL();
+                          })
+                      : SizedBox.shrink(),
+                ],
+              ),
               widget.boookItems.volumeInfo.description != null
                   ? Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
-                        gapY(y: 10),
+                        gapY(y: 6),
                         myText(
                           text: "Description",
                           fontSize: rconfig.fontSize(14),
