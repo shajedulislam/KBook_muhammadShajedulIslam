@@ -66,117 +66,129 @@ class _BookListState extends State<BookList> {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      backgroundColor: MyColors.bg,
-      appBar: AppBar(
-        backgroundColor: MyColors.theme,
-        centerTitle: true,
-        title: myText(
-          text: "KBook",
-          color: Colors.white,
-          fontSize: rconfig.fontSize(18),
+    return WillPopScope(
+      onWillPop: () async {
+        if (isShowFavs) {
+          setState(() {
+            isShowFavs = false;
+          });
+          return false;
+        }
+        return true;
+      },
+      child: Scaffold(
+        backgroundColor: MyColors.bg,
+        appBar: AppBar(
+          backgroundColor: MyColors.theme,
+          centerTitle: true,
+          title: myText(
+            text: "KBook",
+            color: Colors.white,
+            fontSize: rconfig.fontSize(18),
+          ),
+          actions: [],
         ),
-        actions: [],
-      ),
-      body: Stack(
-        alignment: Alignment.bottomCenter,
-        children: [
-          StreamBuilder(
-            stream: fetchBooksBloc.fetch,
-            builder: (context, AsyncSnapshot<BookModel> results) {
-              if (results.hasData) {
-                if (results.data == null ||
-                    results.data.items == null && bookItems.length == 0) {
-                  return Center(
-                      child: myText(
-                    text: "No data found!",
-                    fontSize: rconfig.fontSize(16),
-                  ));
-                } else {
-                  if (results.data.items != null && isLoad == true) {
-                    bookItems.addAll(results.data.items);
+        body: Stack(
+          alignment: Alignment.bottomCenter,
+          children: [
+            StreamBuilder(
+              stream: fetchBooksBloc.fetch,
+              builder: (context, AsyncSnapshot<BookModel> results) {
+                if (results.hasData) {
+                  if (results.data == null ||
+                      results.data.items == null && bookItems.length == 0) {
+                    return Center(
+                        child: myText(
+                      text: "No data found!",
+                      fontSize: rconfig.fontSize(16),
+                    ));
+                  } else {
+                    if (results.data.items != null && isLoad == true) {
+                      bookItems.addAll(results.data.items);
 
-                    for (BoookItems item in results.data.items) {
-                      for (String favId in kbookFavsId) {
-                        if (item.id == favId) {
-                          bookItemsFavs.add(item);
+                      for (BoookItems item in results.data.items) {
+                        for (String favId in kbookFavsId) {
+                          if (item.id == favId) {
+                            bookItemsFavs.add(item);
+                          }
                         }
                       }
-                    }
 
-                    isLoad = false;
-                  }
-                  return Stack(
-                    children: <Widget>[
-                      Offstage(
-                        offstage: isShowFavs,
-                        child: TickerMode(
-                            enabled: !isShowFavs,
-                            child: booksGrid(
-                              context: context,
-                              scrollController: _scrollController,
-                              bookItems: bookItems,
-                              updateFavState: _updateFavState,
-                              isShowFavs: isShowFavs,
-                            )),
-                      ),
-                      Offstage(
-                        offstage: !isShowFavs,
-                        child: TickerMode(
-                          enabled: isShowFavs,
-                          child: bookItemsFavs.length != 0
-                              ? booksGrid(
-                                  context: context,
-                                  bookItems: bookItemsFavs,
-                                  updateFavState: _updateFavState,
-                                  isShowFavs: isShowFavs,
-                                )
-                              : Center(
-                                  child: myText(
-                                    text: "No favourites items found yet!",
-                                    fontSize: rconfig.fontSize(16),
-                                  ),
-                                ),
+                      isLoad = false;
+                    }
+                    return Stack(
+                      children: <Widget>[
+                        Offstage(
+                          offstage: isShowFavs,
+                          child: TickerMode(
+                              enabled: !isShowFavs,
+                              child: booksGrid(
+                                context: context,
+                                scrollController: _scrollController,
+                                bookItems: bookItems,
+                                updateFavState: _updateFavState,
+                                isShowFavs: isShowFavs,
+                              )),
                         ),
-                      ),
-                    ],
-                  );
-                  // return booksGrid(
-                  //   context: context,
-                  //   scrollController: _scrollController,
-                  //   bookItems: isShowFavs ? bookItemsFavs : bookItems,
-                  //   updateFavState: _updateFavState,
-                  // );
+                        Offstage(
+                          offstage: !isShowFavs,
+                          child: TickerMode(
+                            enabled: isShowFavs,
+                            child: bookItemsFavs.length != 0
+                                ? booksGrid(
+                                    context: context,
+                                    bookItems: bookItemsFavs,
+                                    updateFavState: _updateFavState,
+                                    isShowFavs: isShowFavs,
+                                  )
+                                : Center(
+                                    child: myText(
+                                      text: "No favourites items found yet!",
+                                      fontSize: rconfig.fontSize(16),
+                                    ),
+                                  ),
+                          ),
+                        ),
+                      ],
+                    );
+                    // return booksGrid(
+                    //   context: context,
+                    //   scrollController: _scrollController,
+                    //   bookItems: isShowFavs ? bookItemsFavs : bookItems,
+                    //   updateFavState: _updateFavState,
+                    // );
+                  }
+                } else if (results.hasError) {
+                  return Center(
+                      child: myText(
+                    text: "Something went wrong!",
+                    fontSize: rconfig.fontSize(16),
+                  ));
                 }
-              } else if (results.hasError) {
-                return Center(
-                    child: myText(
-                  text: "Something went wrong!",
-                  fontSize: rconfig.fontSize(16),
-                ));
-              }
-              return loadingIndicator();
-            },
-          ),
-          Column(
-            mainAxisAlignment: MainAxisAlignment.end,
-            children: [
-              myButton(
-                width: rconfig.px(110),
-                height: rconfig.px(30),
-                withShadow: false,
-                buttonText: isShowFavs ? "Hide favourites" : "Show favourites",
-                fontSize: rconfig.fontSize(12),
-                function: () {
-                  setState(() {
-                    isShowFavs ? isShowFavs = false : isShowFavs = true;
-                  });
-                },
-              ),
-              gapY(y: 8),
-            ],
-          )
-        ],
+                return loadingIndicator();
+              },
+            ),
+            Column(
+              mainAxisAlignment: MainAxisAlignment.end,
+              children: [
+                myButton(
+                  width: rconfig.px(110),
+                  height: rconfig.px(30),
+                  withShadow: false,
+                  buttonText:
+                      isShowFavs ? "Hide favourites" : "Show favourites",
+                  fontSize: rconfig.fontSize(12),
+                  function: () {
+                    setState(() {
+                      isShowFavs ? isShowFavs = false : isShowFavs = true;
+                    });
+                  },
+                ),
+                gapY(y: 8),
+              ],
+            )
+          ],
+        ),
       ),
     );
   }
