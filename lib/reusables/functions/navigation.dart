@@ -16,3 +16,14 @@ void pop({BuildContext context}) {
 void popWith({BuildContext context, bool value}) {
   Navigator.pop(context, value);
 }
+
+popListener({BuildContext context, Widget screen, Function function}) async {
+  bool doSetState = false;
+  doSetState = await Navigator.push(
+    context,
+    MaterialPageRoute(builder: (context) => screen),
+  );
+  if (doSetState == true) {
+    function();
+  }
+}

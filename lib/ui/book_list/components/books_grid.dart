@@ -8,8 +8,10 @@ import 'package:kbook/reusables/widgets/media/my_image.dart';
 import 'package:kbook/ui/book_details/screen.dart';
 
 Widget booksGrid({
+  BuildContext context,
   ScrollController scrollController,
   List<BoookItems> bookItems,
+  Function updateFavState,
 }) {
   return GridView.builder(
     controller: scrollController,
@@ -20,11 +22,12 @@ Widget booksGrid({
     itemBuilder: (context, i) {
       return InkWell(
         onTap: () {
-          push(
+          popListener(
             context: context,
             screen: BookDetails(
               boookItems: bookItems[i],
             ),
+            function: updateFavState,
           );
         },
         child: Padding(

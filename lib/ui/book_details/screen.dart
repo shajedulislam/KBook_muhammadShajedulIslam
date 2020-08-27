@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:kbook/blocs/book_list/model.dart';
 import 'package:kbook/reusables/enums/image_paths.dart';
 import 'package:kbook/reusables/enums/my_colors.dart';
+import 'package:kbook/reusables/functions/navigation.dart';
 import 'package:kbook/reusables/functions/shared_preferences.dart';
 import 'package:kbook/reusables/objects.dart';
 import 'package:kbook/reusables/widgets/buttons/my_button.dart';
@@ -47,6 +48,17 @@ class _BookDetailsState extends State<BookDetails> {
       appBar: AppBar(
         backgroundColor: MyColors.theme,
         title: myText(text: "Book Detail", color: Colors.white),
+        leading: myButton(
+            width: rconfig.px(45),
+            withShadow: false,
+            customChild: Icon(
+              Icons.arrow_back,
+              color: Colors.white,
+              size: rconfig.fontSize(24),
+            ),
+            function: () {
+              popWith(context: context, value: true);
+            }),
         actions: [
           myButton(
             function: () {

@@ -24,6 +24,27 @@ class _BookListState extends State<BookList> {
   bool isLoad = true;
   bool isShowFavs = false;
 
+  _updateFavState() {
+    SharedPreferenceManager.instance.getStringList('kbook_favs').then((value) {
+      kbookFavsId = value;
+      bookItemsFavs.clear();
+      for (String favId in kbookFavsId) {
+        for (BoookItems item in bookItems) {
+          if (item.id == favId) {
+            bookItemsFavs.add(item);
+          }
+        }
+      }
+    });
+    setState(() {});
+  }
+
+  _loadMoreBooks() {
+    isLoad = true;
+    fetchBooksBloc.request(maxResults: 20, startIndex: loadMoreBookIndex);
+    loadMoreBookIndex = loadMoreBookIndex + 20;
+  }
+
   @override
   void initState() {
     SharedPreferenceManager.instance.getStringList('kbook_favs').then((value) {
@@ -41,12 +62,6 @@ class _BookListState extends State<BookList> {
     });
 
     super.initState();
-  }
-
-  _loadMoreBooks() {
-    isLoad = true;
-    fetchBooksBloc.request(maxResults: 20, startIndex: loadMoreBookIndex);
-    loadMoreBookIndex = loadMoreBookIndex + 20;
   }
 
   @override
@@ -88,8 +103,11 @@ class _BookListState extends State<BookList> {
                   }
 
                   return booksGrid(
-                      scrollController: _scrollController,
-                      bookItems: isShowFavs ? bookItemsFavs : bookItems);
+                    context: context,
+                    scrollController: _scrollController,
+                    bookItems: isShowFavs ? bookItemsFavs : bookItems,
+                    updateFavState: _updateFavState,
+                  );
                 }
               } else if (results.hasError) {
                 return Center(child: myText(text: "Something Went Wrong!"));
