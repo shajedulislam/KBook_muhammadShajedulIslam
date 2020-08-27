@@ -44,7 +44,10 @@ class _BookDetailsState extends State<BookDetails> {
   @override
   Widget build(BuildContext context) {
     return WillPopScope(
-      onWillPop: () async => false,
+      onWillPop: () async {
+        popWith(context: context, value: true);
+        return true;
+      },
       child: Scaffold(
         backgroundColor: MyColors.bg,
         appBar: AppBar(
