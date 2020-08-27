@@ -70,9 +70,11 @@ class _BookListState extends State<BookList> {
       backgroundColor: MyColors.bg,
       appBar: AppBar(
         backgroundColor: MyColors.theme,
+        centerTitle: true,
         title: myText(
           text: "KBook",
           color: Colors.white,
+          fontSize: rconfig.fontSize(18),
         ),
         actions: [],
       ),

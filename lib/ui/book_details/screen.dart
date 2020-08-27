@@ -11,7 +11,6 @@ import 'package:kbook/reusables/widgets/card/my_card.dart';
 import 'package:kbook/reusables/widgets/media/my_image.dart';
 import 'package:kbook/reusables/widgets/sizebox/my_sizebox.dart';
 import 'package:kbook/reusables/widgets/text/my_text.dart';
-import 'package:url_launcher/url_launcher.dart';
 
 class BookDetails extends StatefulWidget {
   final BoookItems boookItems;
@@ -44,196 +43,204 @@ class _BookDetailsState extends State<BookDetails> {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      backgroundColor: MyColors.bg,
-      appBar: AppBar(
-        backgroundColor: MyColors.theme,
-        title: myText(text: "Book Detail", color: Colors.white),
-        leading: myButton(
-            width: rconfig.px(45),
-            withShadow: false,
-            customChild: Icon(
-              Icons.arrow_back,
-              color: Colors.white,
-              size: rconfig.fontSize(24),
-            ),
-            function: () {
-              popWith(context: context, value: true);
-            }),
-        actions: [
-          myButton(
-            function: () {
-              if (isFav) {
-                kbookFavs.remove(widget.boookItems.id);
-                SharedPreferenceManager.instance
-                    .setStringList('kbook_favs', kbookFavs)
-                    .then((_) {
-                  setState(() {
-                    isFav = false;
-                  });
-                });
-              } else {
-                kbookFavs.add(widget.boookItems.id);
-                SharedPreferenceManager.instance
-                    .setStringList('kbook_favs', kbookFavs)
-                    .then((_) {
-                  setState(() {
-                    isFav = true;
-                  });
-                });
-              }
-            },
-            width: rconfig.px(45),
-            withShadow: false,
-            customChild: Icon(
-              isFav ? Icons.favorite : Icons.favorite_border,
-              color: Colors.white,
-              size: rconfig.fontSize(24),
-            ),
+    return WillPopScope(
+      onWillPop: () async => false,
+      child: Scaffold(
+        backgroundColor: MyColors.bg,
+        appBar: AppBar(
+          backgroundColor: MyColors.theme,
+          centerTitle: true,
+          title: myText(
+            text: "Book Detail",
+            color: Colors.white,
+            fontSize: rconfig.fontSize(18),
           ),
-        ],
-      ),
-      body: SingleChildScrollView(
-        physics: ClampingScrollPhysics(),
-        child: Padding(
-          padding: EdgeInsets.all(rconfig.px(20)),
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.stretch,
-            children: [
-              Column(
-                crossAxisAlignment: CrossAxisAlignment.center,
-                children: [
-                  myCard(
-                    width: rconfig.px(200),
-                    height: rconfig.px(250),
-                    child: widget.boookItems.volumeInfo.imageLinks != null
-                        ? widget.boookItems.volumeInfo.imageLinks.thumbnail !=
-                                null
-                            ? myImage(
-                                isNetworkImage: true,
-                                imagePath: widget
-                                    .boookItems.volumeInfo.imageLinks.thumbnail,
-                                boxFit: BoxFit.fitHeight,
-                              )
-                            : myImage(
-                                imagePath: MyImagePaths.no_image,
-                                boxFit: BoxFit.fitHeight,
-                              )
-                        : myImage(
-                            imagePath: MyImagePaths.no_image,
-                            boxFit: BoxFit.fitHeight,
-                          ),
-                  ),
-                  widget.boookItems.volumeInfo.title != null
-                      ? Column(
-                          children: [
-                            gapY(y: 4),
-                            myText(
-                              text: widget.boookItems.volumeInfo.title,
-                              fontSize: rconfig.fontSize(16),
-                              color: Colors.black,
-                              textAlign: TextAlign.center,
-                            ),
-                          ],
-                        )
-                      : SizedBox.shrink(),
-                  widget.boookItems.volumeInfo.authors != null
-                      ? Column(
-                          children: [
-                            gapY(y: 4),
-                            myText(
-                              text: widget.boookItems.volumeInfo.authors
-                                  .join(', '),
-                              fontSize: rconfig.fontSize(14),
-                              color: Colors.black.withOpacity(0.5),
-                              textAlign: TextAlign.center,
-                            ),
-                          ],
-                        )
-                      : SizedBox.shrink(),
-                  gapY(y: 2),
-                  Row(
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    children: [
-                      myText(
-                        text: "Rating : ",
-                        fontSize: rconfig.fontSize(14),
-                        color: Colors.black.withOpacity(0.7),
-                      ),
-                      myText(
-                        text: widget.boookItems.volumeInfo.averageRating ??
-                            "No ratings",
-                        fontSize: rconfig.fontSize(14),
-                        color: Colors.black.withOpacity(0.7),
-                      )
-                    ],
-                  )
-                ],
+          leading: myButton(
+              width: rconfig.px(45),
+              withShadow: false,
+              customChild: Icon(
+                Icons.arrow_back,
+                color: Colors.white,
+                size: rconfig.fontSize(24),
               ),
-              gapY(y: 4),
-              Row(
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: [
-                  widget.boookItems.volumeInfo.previewLink != null
-                      ? myButton(
-                          height: rconfig.px(30),
-                          color: Colors.transparent,
-                          withShadow: false,
-                          borderColor: MyColors.theme,
-                          width: rconfig.px(80),
-                          buttonText: "Preview",
-                          fontColor: MyColors.theme,
-                          fontSize: rconfig.fontSize(14),
-                          function: () {
-                            launchURL(
-                              widget.boookItems.volumeInfo.previewLink
-                                  .toString(),
-                            );
-                          })
-                      : SizedBox.shrink(),
-                  widget.boookItems.saleInfo.buyLink != null &&
-                          widget.boookItems.volumeInfo.previewLink != null
-                      ? gapX(x: 2)
-                      : SizedBox.shrink(),
-                  widget.boookItems.saleInfo.buyLink != null
-                      ? myButton(
-                          height: rconfig.px(30),
-                          color: Colors.transparent,
-                          withShadow: false,
-                          borderColor: MyColors.theme,
-                          width: rconfig.px(80),
-                          buttonText: "Buy Now",
-                          fontColor: MyColors.theme,
-                          fontSize: rconfig.fontSize(14),
-                          function: () {
-                            launchURL(
-                                widget.boookItems.saleInfo.buyLink.toString());
-                          })
-                      : SizedBox.shrink(),
-                ],
+              function: () {
+                popWith(context: context, value: true);
+              }),
+          actions: [
+            myButton(
+              function: () {
+                if (isFav) {
+                  kbookFavs.remove(widget.boookItems.id);
+                  SharedPreferenceManager.instance
+                      .setStringList('kbook_favs', kbookFavs)
+                      .then((_) {
+                    setState(() {
+                      isFav = false;
+                    });
+                  });
+                } else {
+                  kbookFavs.add(widget.boookItems.id);
+                  SharedPreferenceManager.instance
+                      .setStringList('kbook_favs', kbookFavs)
+                      .then((_) {
+                    setState(() {
+                      isFav = true;
+                    });
+                  });
+                }
+              },
+              width: rconfig.px(45),
+              withShadow: false,
+              customChild: Icon(
+                isFav ? Icons.favorite : Icons.favorite_border,
+                color: Colors.white,
+                size: rconfig.fontSize(24),
               ),
-              widget.boookItems.volumeInfo.description != null
-                  ? Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
+            ),
+          ],
+        ),
+        body: SingleChildScrollView(
+          physics: ClampingScrollPhysics(),
+          child: Padding(
+            padding: EdgeInsets.all(rconfig.px(20)),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.stretch,
+              children: [
+                Column(
+                  crossAxisAlignment: CrossAxisAlignment.center,
+                  children: [
+                    myCard(
+                      width: rconfig.px(200),
+                      height: rconfig.px(250),
+                      child: widget.boookItems.volumeInfo.imageLinks != null
+                          ? widget.boookItems.volumeInfo.imageLinks.thumbnail !=
+                                  null
+                              ? myImage(
+                                  isNetworkImage: true,
+                                  imagePath: widget.boookItems.volumeInfo
+                                      .imageLinks.thumbnail,
+                                  boxFit: BoxFit.fitHeight,
+                                )
+                              : myImage(
+                                  imagePath: MyImagePaths.no_image,
+                                  boxFit: BoxFit.fitHeight,
+                                )
+                          : myImage(
+                              imagePath: MyImagePaths.no_image,
+                              boxFit: BoxFit.fitHeight,
+                            ),
+                    ),
+                    widget.boookItems.volumeInfo.title != null
+                        ? Column(
+                            children: [
+                              gapY(y: 4),
+                              myText(
+                                text: widget.boookItems.volumeInfo.title,
+                                fontSize: rconfig.fontSize(16),
+                                color: Colors.black,
+                                textAlign: TextAlign.center,
+                              ),
+                            ],
+                          )
+                        : SizedBox.shrink(),
+                    widget.boookItems.volumeInfo.authors != null
+                        ? Column(
+                            children: [
+                              gapY(y: 4),
+                              myText(
+                                text: widget.boookItems.volumeInfo.authors
+                                    .join(', '),
+                                fontSize: rconfig.fontSize(14),
+                                color: Colors.black.withOpacity(0.5),
+                                textAlign: TextAlign.center,
+                              ),
+                            ],
+                          )
+                        : SizedBox.shrink(),
+                    gapY(y: 2),
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.center,
                       children: [
-                        gapY(y: 6),
                         myText(
-                          text: "Description",
+                          text: "Rating : ",
                           fontSize: rconfig.fontSize(14),
-                          fontWeight: FontWeight.w600,
+                          color: Colors.black.withOpacity(0.7),
                         ),
-                        gapY(y: 2),
-                        ExpandableText(
-                          widget.boookItems.volumeInfo.description,
-                          expandText: 'show more',
-                          collapseText: 'show less',
-                          maxLines: 10,
-                          linkColor: Colors.blue,
+                        myText(
+                          text: widget.boookItems.volumeInfo.averageRating ??
+                              "No ratings",
+                          fontSize: rconfig.fontSize(14),
+                          color: Colors.black.withOpacity(0.7),
                         )
                       ],
                     )
-                  : SizedBox.shrink(),
-            ],
+                  ],
+                ),
+                gapY(y: 4),
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    widget.boookItems.volumeInfo.previewLink != null
+                        ? myButton(
+                            height: rconfig.px(30),
+                            color: Colors.transparent,
+                            withShadow: false,
+                            borderColor: MyColors.theme,
+                            width: rconfig.px(80),
+                            buttonText: "Preview",
+                            fontColor: MyColors.theme,
+                            fontSize: rconfig.fontSize(14),
+                            function: () {
+                              launchURL(
+                                widget.boookItems.volumeInfo.previewLink
+                                    .toString(),
+                              );
+                            })
+                        : SizedBox.shrink(),
+                    widget.boookItems.saleInfo.buyLink != null &&
+                            widget.boookItems.volumeInfo.previewLink != null
+                        ? gapX(x: 2)
+                        : SizedBox.shrink(),
+                    widget.boookItems.saleInfo.buyLink != null
+                        ? myButton(
+                            height: rconfig.px(30),
+                            color: Colors.transparent,
+                            withShadow: false,
+                            borderColor: MyColors.theme,
+                            width: rconfig.px(80),
+                            buttonText: "Buy Now",
+                            fontColor: MyColors.theme,
+                            fontSize: rconfig.fontSize(14),
+                            function: () {
+                              launchURL(widget.boookItems.saleInfo.buyLink
+                                  .toString());
+                            })
+                        : SizedBox.shrink(),
+                  ],
+                ),
+                widget.boookItems.volumeInfo.description != null
+                    ? Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          gapY(y: 6),
+                          myText(
+                            text: "Description",
+                            fontSize: rconfig.fontSize(14),
+                            fontWeight: FontWeight.w600,
+                          ),
+                          gapY(y: 2),
+                          ExpandableText(
+                            widget.boookItems.volumeInfo.description,
+                            expandText: 'show more',
+                            collapseText: 'show less',
+                            maxLines: 10,
+                            linkColor: Colors.blue,
+                          )
+                        ],
+                      )
+                    : SizedBox.shrink(),
+              ],
+            ),
           ),
         ),
       ),

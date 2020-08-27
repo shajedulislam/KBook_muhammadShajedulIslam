@@ -1,6 +1,5 @@
 import 'package:dio/dio.dart';
 import 'package:kbook/config/endpoints.dart';
-import 'model.dart';
 
 class FetchBooksApi {
   // ignore: missing_return
